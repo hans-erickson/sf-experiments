@@ -9,3 +9,8 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(speed-cycle speed-cycle.cpp)
 
 target_link_libraries(speed-cycle sfcpp sndfile)
+
+
+add_executable(accel-decel accel-decel.cpp)
+
+target_link_libraries(accel-decel sfcpp sndfile)

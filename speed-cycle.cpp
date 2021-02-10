@@ -41,7 +41,7 @@ namespace
 
 int main(int argc, char** argv)
 {
-    if (argc < 1 || argc > 3)
+    if (argc != 3)
     {
         usage(argv[0]);
     }
@@ -69,7 +69,9 @@ int main(int argc, char** argv)
         int count = 0;
         double offset = 0;
         double phase = chan * M_PI;
-        while (offset >= 0.0 && offset < input.size())
+        double minspeed = 1.0;
+        double maxspeed = 3.0;
+        while (offset >= 0.0 && offset < input.size() / info.channels)
         {
             int in_index = static_cast<int>(offset) * info.channels + chan;
             int out_index = count * info.channels + chan;
@@ -79,7 +81,7 @@ int main(int argc, char** argv)
                 output.resize(out_index + 1);
             }
             output[out_index] = input[in_index];
-            offset += sin(static_cast<double>(count) * M_PI / (info.samplerate * 10) + phase) + 1.0;
+            offset += sin(static_cast<double>(count) * M_PI / (info.samplerate * 10) + phase) + (maxspeed - minspeed) / 2.0 + 1.0;
 
             ++count;
         }
@@ -94,47 +96,3 @@ int main(int argc, char** argv)
     }
     std::cerr << "output size is " << output.size() << std::endl;
 }
-
-/*
-namespace
-{
-    std::string
-    get_sf_path(const std::string& fname)
-    {
-        return std::string(SF_TEST_SOUND_DIR) + "/" + fname;
-    }
-
-    std::string
-    get_tmp_path(const std::string& fname)
-    {
-        return std::string("/tmp/") + fname;
-    }
-}
-
-TEST(WrapperTest, BellTest)
-{
-    sf::file::info rinfo;
-    sf::file in(get_sf_path("bell.oga"), SFM_READ, rinfo);
-    EXPECT_EQ(rinfo.frames, 6151);
-    EXPECT_EQ(rinfo.samplerate, 44100);
-    EXPECT_EQ(rinfo.channels, 2);
-    EXPECT_EQ(rinfo.format, SF_FORMAT_OGG | SF_FORMAT_VORBIS);
-    EXPECT_EQ(rinfo.sections, 1);
-    EXPECT_EQ(rinfo.seekable, 1);
-
-    std::vector<float> buffer(rinfo.frames * rinfo.channels);
-    in.read(buffer);
-
-    EXPECT_EQ(buffer.size(), rinfo.frames * rinfo.channels);
-    std::vector<float> reverse(buffer.rbegin(), buffer.rend());
-
-    sf::file::info winfo;
-    winfo.samplerate = rinfo.samplerate;
-    winfo.channels = rinfo.channels;
-    winfo.format = rinfo.format;
-    
-    EXPECT_EQ(reverse.size(), rinfo.frames * rinfo.channels);
-    sf::file out(get_tmp_path("reverse-bell.ogg"), SFM_WRITE, winfo);
-    out.write(reverse);
-}
-*/
